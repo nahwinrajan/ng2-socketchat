@@ -7,5 +7,20 @@ export class ChatService {
   private url = 'http://localhost:8000';
   private socket:any;
 
+  sendMessage(message:string) {
+    this.socket.emit('add-message', message);
+  }
 
+  getMessages() {
+    let observable = new Observable((obs:any) => {
+      this.socket = io(this.url);
+      this.socket.on('message', (data:any) => {
+        obs.next(data);
+      });
+      return() => {
+        this.socket.disconnect();
+      }
+    })
+    return observable;
+  }
 }
